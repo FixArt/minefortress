@@ -103,16 +103,17 @@ class ServerTaskManager(private val server: MinecraftServer, fortressPos: BlockP
     }
 
     private fun setPawnsToTask(task: IBaseTask, workers: List<IWorkerPawn>) {
+        val sortedWorkers = workers.sortedBy { task.pos.getSquaredDistance(it.pos) }
         when (task) {
             is ITask ->
-                for (worker in workers) {
+                for (worker in sortedWorkers) {
                     if (!task.hasAvailableParts() || !task.canTakeMoreWorkers()) break
                     task.addWorker()
                     worker.taskControl.setTask(task)
                 }
 
             is IAreaBasedTask ->
-                for (worker in workers) {
+                for (worker in sortedWorkers) {
                     if (!task.hasMoreBlocks() || !task.canTakeMoreWorkers()) break
                     task.addWorker()
                     worker.areaBasedTaskControl.setTask(task)
