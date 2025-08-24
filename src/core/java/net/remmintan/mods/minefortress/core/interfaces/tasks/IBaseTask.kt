@@ -23,5 +23,5 @@ interface IBaseTask {
     fun canTakeMoreWorkers(): Boolean
     fun addWorker()
     fun removeWorker()
-
+    fun estimateTimeRequired(): Double
 }

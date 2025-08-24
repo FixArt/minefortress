@@ -22,6 +22,7 @@ import net.remmintan.mods.minefortress.core.utils.*
 import net.remmintan.mods.minefortress.networking.helpers.FortressChannelNames
 import net.remmintan.mods.minefortress.networking.helpers.FortressServerNetworkHelper
 import net.remmintan.mods.minefortress.networking.s2c.ClientboundTaskExecutedPacket
+import org.minefortress.MineFortressConstants
 import org.minefortress.tasks.block.info.BlockStateTaskBlockInfo
 import org.minefortress.tasks.block.info.DigTaskBlockInfo
 import java.util.*
@@ -83,6 +84,10 @@ class AreaBlueprintTask(
     override fun removeWorker() {
         assignedWorkers--
     }
+
+    // All buildings are build over land, with most blocks being air.
+    // So we assume that 9 out of every 10 blocks in selection are air.
+    override fun estimateTimeRequired(): Double = (totalManualBlocks * (MineFortressConstants.ESTIMATED_PLACING_TIME + MineFortressConstants.ESTIMATED_BREAKING_TIME * 0.1)) / assignedWorkers
 
     override fun getNextBlock(): ITaskBlockInfo? {
         return blocksQueue.poll()

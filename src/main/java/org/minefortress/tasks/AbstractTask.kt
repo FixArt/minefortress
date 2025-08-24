@@ -15,6 +15,7 @@ import net.remmintan.mods.minefortress.core.utils.getFortressOwner
 import net.remmintan.mods.minefortress.networking.helpers.FortressChannelNames
 import net.remmintan.mods.minefortress.networking.helpers.FortressServerNetworkHelper
 import net.remmintan.mods.minefortress.networking.s2c.ClientboundTaskExecutedPacket
+import org.minefortress.MineFortressConstants
 import java.util.*
 
 private const val PART_SIZE = 3
@@ -129,4 +130,6 @@ abstract class AbstractTask protected constructor(
         }
         return cursor.toImmutable()
     }
+
+    override fun estimateTimeRequired(): Double = (positions.size * (MineFortressConstants.ESTIMATED_PLACING_TIME + MineFortressConstants.ESTIMATED_BREAKING_TIME)) / assignedWorkers
 }

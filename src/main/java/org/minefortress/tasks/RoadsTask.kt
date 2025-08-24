@@ -13,6 +13,7 @@ import net.remmintan.mods.minefortress.core.interfaces.tasks.ITaskPart
 import net.remmintan.mods.minefortress.networking.helpers.FortressChannelNames
 import net.remmintan.mods.minefortress.networking.helpers.FortressServerNetworkHelper
 import net.remmintan.mods.minefortress.networking.s2c.ClientboundTaskExecutedPacket
+import org.minefortress.MineFortressConstants
 import org.minefortress.tasks.block.info.ReplaceTaskBlockInfo
 import java.util.*
 import kotlin.math.max
@@ -129,4 +130,6 @@ class RoadsTask(override val positions: List<BlockPos>, private val item: Item) 
     override fun removeWorker() {
         assignedWorkers++
     }
+
+    override fun estimateTimeRequired(): Double = (positions.size * (MineFortressConstants.ESTIMATED_PLACING_TIME + MineFortressConstants.ESTIMATED_BREAKING_TIME)) / assignedWorkers
 }

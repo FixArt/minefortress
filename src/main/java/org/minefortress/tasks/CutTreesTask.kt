@@ -94,4 +94,7 @@ class CutTreesTask(private val trees: Map<BlockPos, TreeData>) : ITask {
     override fun removeWorker() {
         assignedWorkers--
     }
+
+    // 1.5 is wood breaking speed with wooden axe, taken from wiki.
+    override fun estimateTimeRequired(): Double = totalTreesCount * 1.5 / assignedWorkers
 }
