@@ -7,6 +7,7 @@ import net.remmintan.mods.minefortress.core.utils.BuildingHelper
 import net.remmintan.mods.minefortress.core.utils.SimilarItemsHelper
 import net.remmintan.mods.minefortress.core.utils.getManagersProvider
 import net.remmintan.mods.minefortress.core.utils.isCreativeFortress
+import org.minefortress.MineFortressConstants
 import org.minefortress.entity.Colonist
 import org.minefortress.entity.colonist.IFortressHungerManager
 import org.minefortress.tasks.block.info.BlockStateTaskBlockInfo
@@ -65,7 +66,7 @@ class PlaceControl(private val colonist: Colonist) : PositionedActionControl() {
         if (interactionResult == ActionResult.CONSUME || failedInteractions > 15) {
             if (interactionResult == ActionResult.CONSUME) decreaseResourcesAndAddSpecialBlocksAmount()
             this.reset()
-            this.placeCooldown = 6f
+            this.placeCooldown = MineFortressConstants.PLACE_COOLDOWN
         } else {
             failedInteractions++
         }
@@ -80,7 +81,7 @@ class PlaceControl(private val colonist: Colonist) : PositionedActionControl() {
         decreaseResourcesAndAddSpecialBlocksAmount()
 
         this.reset()
-        this.placeCooldown = 6f
+        this.placeCooldown = MineFortressConstants.PLACE_COOLDOWN
     }
 
     private fun place(blockInfo: ReplaceTaskBlockInfo) {
@@ -92,7 +93,7 @@ class PlaceControl(private val colonist: Colonist) : PositionedActionControl() {
         decreaseResourcesAndAddSpecialBlocksAmount()
 
         this.reset()
-        this.placeCooldown = 6f
+        this.placeCooldown = MineFortressConstants.PLACE_COOLDOWN
     }
 
     private fun decreaseResourcesAndAddSpecialBlocksAmount() {
