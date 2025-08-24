@@ -14,7 +14,7 @@ class WanderAroundTheFortressGoal(colonist: Colonist) : AbstractFortressGoal(col
 
     override fun canStart(): Boolean {
         if (colonist.eatControl.map { it.isEating }.orElse(false)) return false
-        if (!isDay || colonist.taskControl.hasTask()) return false
+        if (!isDay || colonist.taskQueueControl.hasTasks()) return false
         val durationSinceStop = Duration.between(stopTime, LocalDateTime.now()).toMillis()
         if (durationSinceStop < delay) return false
 
@@ -44,7 +44,7 @@ class WanderAroundTheFortressGoal(colonist: Colonist) : AbstractFortressGoal(col
     }
 
     override fun shouldContinue(): Boolean {
-        return isDay && !colonist.taskControl.hasTask() && colonist.movementHelper.stillTryingToReachGoal()
+        return isDay && !colonist.taskQueueControl.hasTasks() && colonist.movementHelper.stillTryingToReachGoal()
     }
 
     override fun stop() {

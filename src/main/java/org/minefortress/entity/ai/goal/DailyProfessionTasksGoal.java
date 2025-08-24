@@ -1,6 +1,6 @@
 package org.minefortress.entity.ai.goal;
 
-import net.remmintan.mods.minefortress.core.interfaces.entities.pawns.controls.ITaskControl;
+import net.remmintan.mods.minefortress.core.interfaces.entities.pawns.controls.ITaskQueueControl;
 import org.minefortress.entity.Colonist;
 import org.minefortress.entity.ai.professions.*;
 
@@ -29,8 +29,8 @@ public class DailyProfessionTasksGoal extends AbstractFortressGoal {
     @Override
     public boolean canStart() {
         if (this.wantAndCanEatSomeFood()) return false;
-        final ITaskControl taskControl = getTaskControl();
-        if(taskControl.hasTask()) return false;
+        final ITaskQueueControl taskQueueControl = getTaskQueueControl();
+        if(taskQueueControl.hasTasks()) return false;
         final String professionId = colonist.getProfessionId();
 
         for(String professionIdPart : dailyTasks.keySet()) {
@@ -49,7 +49,7 @@ public class DailyProfessionTasksGoal extends AbstractFortressGoal {
 
     @Override
     public void start() {
-        colonist.getTaskControl().setDoingEverydayTasks(true);
+        getTaskQueueControl().setDoingEverydayTasks(true);
         this.currentTask.start(colonist);
     }
 
@@ -63,13 +63,13 @@ public class DailyProfessionTasksGoal extends AbstractFortressGoal {
         return !wantAndCanEatSomeFood()
                 && this.currentTask != null
                 && this.currentTask.shouldContinue(colonist)
-                && !getTaskControl().hasTask();
+                && !getTaskQueueControl().hasTasks();
     }
 
     @Override
     public void stop() {
         this.currentTask.stop(colonist);
-        colonist.getTaskControl().setDoingEverydayTasks(false);
+        getTaskQueueControl().setDoingEverydayTasks(false);
     }
 
     @Override
@@ -77,7 +77,7 @@ public class DailyProfessionTasksGoal extends AbstractFortressGoal {
         return this.wantAndCanEatSomeFood();
     }
 
-    private ITaskControl getTaskControl() {
-        return colonist.getTaskControl();
+    private ITaskQueueControl getTaskQueueControl() {
+        return colonist.getTaskQueueControl();
     }
 }

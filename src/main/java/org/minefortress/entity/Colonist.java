@@ -32,16 +32,14 @@ import net.remmintan.mods.minefortress.core.interfaces.entities.pawns.IWorkerPaw
 import net.remmintan.mods.minefortress.core.interfaces.entities.pawns.controls.IAreaBasedTaskControl;
 import net.remmintan.mods.minefortress.core.interfaces.entities.pawns.controls.IEatControl;
 import net.remmintan.mods.minefortress.core.interfaces.entities.pawns.controls.ITaskControl;
+import net.remmintan.mods.minefortress.core.interfaces.entities.pawns.controls.ITaskQueueControl;
 import net.remmintan.mods.minefortress.core.interfaces.server.IServerFortressManager;
 import net.remmintan.mods.minefortress.core.interfaces.server.IServerManagersProvider;
 import net.remmintan.mods.minefortress.core.interfaces.tasks.ITaskBlockInfo;
 import net.remmintan.mods.minefortress.core.utils.ServerModUtils;
 import org.jetbrains.annotations.Nullable;
 import org.minefortress.entity.ai.MovementHelper;
-import org.minefortress.entity.ai.controls.AreaBasedTaskControl;
-import org.minefortress.entity.ai.controls.DigControl;
-import org.minefortress.entity.ai.controls.PlaceControl;
-import org.minefortress.entity.ai.controls.TaskControl;
+import org.minefortress.entity.ai.controls.*;
 import org.minefortress.entity.ai.goal.*;
 import org.minefortress.registries.FortressEntities;
 
@@ -65,6 +63,7 @@ public class Colonist extends NamedPawnEntity implements IMinefortressEntity, IW
     private final PlaceControl placeControl;
     private final ITaskControl taskControl;
     private final IAreaBasedTaskControl areaBasedTaskControl;
+    private final ITaskQueueControl taskQueueControl;
     private final MovementHelper movementHelper;
     private final IBaritone baritone;
 
@@ -78,6 +77,7 @@ public class Colonist extends NamedPawnEntity implements IMinefortressEntity, IW
             placeControl = new PlaceControl(this);
             taskControl = new TaskControl(this);
             areaBasedTaskControl = new AreaBasedTaskControl(this);
+            taskQueueControl = new TaskQueueControl(this, taskControl, areaBasedTaskControl);
             baritone = BaritoneAPI.getProvider().getBaritone(this);
             movementHelper = new MovementHelper(this);
         } else {
@@ -85,6 +85,7 @@ public class Colonist extends NamedPawnEntity implements IMinefortressEntity, IW
             placeControl = null;
             taskControl = null;
             areaBasedTaskControl = null;
+            taskQueueControl = null;
             baritone = null;
             movementHelper = null;
         }
@@ -228,10 +229,7 @@ public class Colonist extends NamedPawnEntity implements IMinefortressEntity, IW
     public void tick() {
         super.tick();
 
-        boolean taskControlHasTask = this.taskControl != null && (taskControl.hasTask() || taskControl.isDoingEverydayTasks());
-        boolean areaTaskControlHasTask = this.areaBasedTaskControl != null && areaBasedTaskControl.hasTask();
-        this.setHasTask(taskControlHasTask || areaTaskControlHasTask);
-
+        this.setHasTask(taskQueueControl != null && taskQueueControl.hasTasks());
 
         if((isHalfInWall() || isEyesInTheWall()) && !this.isSleeping())
             this.getJumpControl().setActive();
@@ -246,6 +244,7 @@ public class Colonist extends NamedPawnEntity implements IMinefortressEntity, IW
         if(getMovementHelper() != null) getMovementHelper().tick();
         if (getAreaBasedTaskControl() != null) getAreaBasedTaskControl().tick();
         if (getTaskControl() != null) getTaskControl().tick();
+        if (getTaskQueueControl() != null) getTaskQueueControl().tick();
     }
 
     private boolean isHalfInWall() {
@@ -393,6 +392,11 @@ public class Colonist extends NamedPawnEntity implements IMinefortressEntity, IW
     @Override
     public IAreaBasedTaskControl getAreaBasedTaskControl() {
         return areaBasedTaskControl;
+    }
+
+    @Override
+    public ITaskQueueControl getTaskQueueControl() {
+        return taskQueueControl;
     }
 
     private void setHasTask(boolean hasTask) {

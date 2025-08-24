@@ -22,7 +22,7 @@ public class SleepOnTheBedGoal extends AbstractFortressGoal {
 
     @Override
     public boolean canStart() {
-        if(!isNight() || colonist.getTaskControl().hasTask()) return false;
+        if(!isNight() || colonist.getTaskQueueControl().hasTasks()) return false;
         final var target = colonist.getTarget();
         if(target != null && target.isAlive()) return false;
         getFreeBed().ifPresent(it -> bedPos = it);
@@ -62,7 +62,7 @@ public class SleepOnTheBedGoal extends AbstractFortressGoal {
 
     @Override
     public boolean shouldContinue() {
-        return isNight() && bedStillValid() && !colonist.getTaskControl().hasTask();
+        return isNight() && bedStillValid() && !colonist.getTaskQueueControl().hasTasks();
     }
 
     @Override

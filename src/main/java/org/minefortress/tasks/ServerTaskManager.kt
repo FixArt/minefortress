@@ -22,6 +22,7 @@ import net.remmintan.mods.minefortress.networking.helpers.FortressChannelNames
 import net.remmintan.mods.minefortress.networking.helpers.FortressServerNetworkHelper
 import net.remmintan.mods.minefortress.networking.s2c.ClientboundTaskExecutedPacket
 import net.remmintan.mods.minefortress.networking.s2c.S2CAddClientTaskPacket
+import org.minefortress.MineFortressConstants
 import java.util.*
 import java.util.concurrent.ConcurrentHashMap
 
@@ -103,20 +104,18 @@ class ServerTaskManager(private val server: MinecraftServer, fortressPos: BlockP
     }
 
     private fun setPawnsToTask(task: IBaseTask, workers: List<IWorkerPawn>) {
-        val sortedWorkers = workers.sortedBy { task.pos.getSquaredDistance(it.pos) }
+        val sortedWorkers = workers.filter { !it.taskQueueControl.isOnTask(task) }.sortedBy { it.taskQueueControl.estimateTimeRequired() + (it.taskQueueControl.lastPos.getSquaredDistance(task.pos)) / MineFortressConstants.ESTIMATED_RUNNING_SPEED }
         when (task) {
             is ITask ->
                 for (worker in sortedWorkers) {
                     if (!task.hasAvailableParts() || !task.canTakeMoreWorkers()) break
-                    task.addWorker()
-                    worker.taskControl.setTask(task)
+                    worker.taskQueueControl.addTask(task)
                 }
 
             is IAreaBasedTask ->
                 for (worker in sortedWorkers) {
                     if (!task.hasMoreBlocks() || !task.canTakeMoreWorkers()) break
-                    task.addWorker()
-                    worker.areaBasedTaskControl.setTask(task)
+                    worker.taskQueueControl.addTask(task)
                 }
 
             else -> error("Wrong task class")
@@ -212,7 +211,7 @@ class ServerTaskManager(private val server: MinecraftServer, fortressPos: BlockP
                 .filterNotNull()
                 .filter { it is IWorkerPawn }
                 .map { it as IWorkerPawn }
-                .filter { !it.taskControl.isDoingEverydayTasks }
+                .filter { !it.taskQueueControl.isDoingEverydayTasks }
                 .toList()
         }
     }

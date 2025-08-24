@@ -17,11 +17,8 @@ import org.minefortress.tasks.SimpleSelectionTask;
 public class TaskControl implements ITaskControl {
 
     private final Colonist worker;
-    private boolean doingEverydayTasks = false;
     private ITask task;
     private ITaskPart taskPart;
-
-    private int cooldown = 0;
 
     public TaskControl(Colonist worker) {
         this.worker = worker;
@@ -63,16 +60,6 @@ public class TaskControl implements ITaskControl {
     }
 
     @Override
-    public void setDoingEverydayTasks(boolean doingEverydayTasks) {
-        this.doingEverydayTasks = doingEverydayTasks;
-    }
-
-    @Override
-    public boolean isDoingEverydayTasks() {
-        return doingEverydayTasks;
-    }
-
-    @Override
     public boolean partHasMoreBlocks() {
         return taskPart != null && taskPart.hasNext();
     }
@@ -101,14 +88,7 @@ public class TaskControl implements ITaskControl {
     }
 
     @Override
-    public void tick() {
-        if (cooldown > 0) cooldown--;
-    }
-
-    @Override
-    public boolean readyToTakeNewTask() {
-        return cooldown <= 0 && !hasTask() && !isDoingEverydayTasks();
-    }
+    public void tick() {}
 
     public boolean taskIsOfType(Class<? extends IBaseTask> taskClass) {
         return taskClass.isInstance(task);
@@ -143,7 +123,6 @@ public class TaskControl implements ITaskControl {
             this.task = null;
         }
         this.taskPart = null;
-        cooldown = 20;
     }
 
 }

@@ -15,6 +15,5 @@ interface IAreaBasedTaskControl {
     fun moveToNextBlock(): ITaskBlockInfo?
     fun reset()
     fun tick()
-    fun readyToTakeNewTask(): Boolean
 
 }

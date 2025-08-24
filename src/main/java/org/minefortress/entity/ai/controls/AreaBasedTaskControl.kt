@@ -12,8 +12,6 @@ class AreaBasedTaskControl(private val pawn: Colonist) : IAreaBasedTaskControl {
     private var task: IAreaBasedTask? = null
     private var currentBlock: ITaskBlockInfo? = null
 
-    private var cooldown: Int = 0
-
     override fun setTask(task: IAreaBasedTask) {
         this.task = task
     }
@@ -51,14 +49,7 @@ class AreaBasedTaskControl(private val pawn: Colonist) : IAreaBasedTaskControl {
         task?.removeWorker()
         this.task = null
         this.currentBlock = null
-        this.cooldown = 20
     }
 
-    override fun tick() {
-        if (cooldown > 0) cooldown--
-    }
-
-    override fun readyToTakeNewTask(): Boolean {
-        return !this.hasTask() && cooldown <= 0
-    }
+    override fun tick() {}
 }

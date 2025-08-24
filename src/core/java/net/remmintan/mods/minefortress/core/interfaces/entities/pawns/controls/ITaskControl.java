@@ -18,10 +18,6 @@ public interface ITaskControl {
 
     boolean hasTaskPart();
 
-    void setDoingEverydayTasks(boolean doingEverydayTasks);
-
-    boolean isDoingEverydayTasks();
-
     boolean partHasMoreBlocks();
 
     void findNextPart();
@@ -31,8 +27,6 @@ public interface ITaskControl {
     @Nullable ITaskBlockInfo getNextBlock();
 
     void tick();
-
-    boolean readyToTakeNewTask();
 
     boolean taskIsOfType(Class<? extends IBaseTask> taskClass);
 }

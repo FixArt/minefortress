@@ -466,7 +466,7 @@ public final class ServerFortressManager implements IServerFortressManager {
     public List<IWorkerPawn> getReadyWorkers() {
         return getWorkersStream()
                 .filter(it -> Colonist.DEFAULT_PROFESSION_ID.equals(it.getProfessionId()))
-                .filter(it -> it.getTaskControl().readyToTakeNewTask() && it.getAreaBasedTaskControl().readyToTakeNewTask())
+                .filter(it -> !it.getTaskQueueControl().isDoingEverydayTasks())
                 .toList();
     }
 
