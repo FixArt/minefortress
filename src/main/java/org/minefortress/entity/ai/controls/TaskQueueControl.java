@@ -70,22 +70,38 @@ public class TaskQueueControl implements ITaskQueueControl {
     private boolean isCurrentTaskFinalized() {
         return currentTask != null && !taskControl.hasTask() && !areaBasedTaskControl.hasTask();
     }
+    private void removeCurrentTask() {
+        uniqueTasks.remove(currentTask);
+        currentTask = null;
+        cooldown = MineFortressConstants.TASK_COOLDOWN;
+        if(tasks.isEmpty())
+            requiredTime = 0;
+    }
     @Override
     public void tick() {
         if (cooldown > 0) cooldown--;
-        if(requiredTime != 0) {
-            requiredTime -= 0.05;
-            if(requiredTime < 0) {
-                requiredTime = 0;
-            }
-        }
+        if(requiredTime != 0)
+            requiredTime = Math.max(0, requiredTime - 0.05);
 
         if(isCurrentTaskFinalized()) {
-            uniqueTasks.remove(currentTask);
-            currentTask = null;
-            cooldown = MineFortressConstants.TASK_COOLDOWN;
-            if(tasks.isEmpty())
-                requiredTime = 0;
+            // Due to the way tasks choose amount of workers, even if this pawn finished
+            // there still may be place for another pawn. So before finishing task
+            // we check if there still actually no work to do.
+            if (currentTask instanceof ITask ct) {
+                if (ct.hasAvailableParts()) {
+                    ct.addWorker();
+                    taskControl.setTask(ct);
+                }
+                else removeCurrentTask();
+            } else if (currentTask instanceof IAreaBasedTask abt) {
+                if (abt.hasMoreBlocks()) {
+                    abt.addWorker();
+                    areaBasedTaskControl.setTask(abt);
+                }
+                else removeCurrentTask();
+            } else {
+                throw new IllegalStateException("Wrong task class");
+            }
         }
 
         if(currentTask == null && cooldown == 0) {
