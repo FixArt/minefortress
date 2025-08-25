@@ -88,13 +88,13 @@ public class TaskQueueControl implements ITaskQueueControl {
             // there still may be place for another pawn. So before finishing task
             // we check if there still actually no work to do.
             if (currentTask instanceof ITask ct) {
-                if (ct.hasAvailableParts()) {
+                if (ct.canTakeMoreWorkers() && ct.hasAvailableParts()) {
                     ct.addWorker();
                     taskControl.setTask(ct);
                 }
                 else removeCurrentTask();
             } else if (currentTask instanceof IAreaBasedTask abt) {
-                if (abt.hasMoreBlocks()) {
+                if (abt.canTakeMoreWorkers() && abt.hasMoreBlocks()) {
                     abt.addWorker();
                     areaBasedTaskControl.setTask(abt);
                 }
