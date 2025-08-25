@@ -68,7 +68,7 @@ public class TaskQueueControl implements ITaskQueueControl {
         }
     }
     private boolean isCurrentTaskFinalized() {
-        return currentTask != null && (currentTask.isComplete() || !currentTask.notCancelled());
+        return currentTask != null && !taskControl.hasTask() && !areaBasedTaskControl.hasTask();
     }
     @Override
     public void tick() {
