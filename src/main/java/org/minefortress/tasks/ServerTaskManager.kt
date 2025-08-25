@@ -102,11 +102,20 @@ class ServerTaskManager(private val server: MinecraftServer, fortressPos: BlockP
         }
     }
 
+    private fun freeWorkerUp(worker: IWorkerPawn) {
+        if (worker.taskControl.hasTask()) {
+            worker.taskControl.fail()
+        }
+        if (worker.areaBasedTaskControl.hasTask()) {
+            worker.areaBasedTaskControl.reset()
+        }
+    }
     private fun setPawnsToTask(task: IBaseTask, workers: List<IWorkerPawn>) {
         when (task) {
             is ITask ->
                 for (worker in workers) {
                     if (!task.hasAvailableParts() || !task.canTakeMoreWorkers()) break
+                    freeWorkerUp(worker)
                     task.addWorker()
                     worker.taskControl.setTask(task)
                 }
@@ -114,6 +123,7 @@ class ServerTaskManager(private val server: MinecraftServer, fortressPos: BlockP
             is IAreaBasedTask ->
                 for (worker in workers) {
                     if (!task.hasMoreBlocks() || !task.canTakeMoreWorkers()) break
+                    freeWorkerUp(worker)
                     task.addWorker()
                     worker.areaBasedTaskControl.setTask(task)
                 }
