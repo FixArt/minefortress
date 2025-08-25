@@ -117,7 +117,7 @@ public class TaskControl implements ITaskControl {
         this.taskPart = null;
     }
 
-    private void resetAll() {
+    public void resetAll() {
         if (task != null) {
             this.task.removeWorker();
             this.task = null;

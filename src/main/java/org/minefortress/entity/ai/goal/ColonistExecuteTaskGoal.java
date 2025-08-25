@@ -99,6 +99,7 @@ public class ColonistExecuteTaskGoal extends AbstractFortressGoal {
                 taskControl.success();
             }
         }
+        taskControl.resetAll();
         this.colonist.setAllowToPlaceBlockFromFarAway(false);
         this.colonist.resetControls();
         this.goal = null;

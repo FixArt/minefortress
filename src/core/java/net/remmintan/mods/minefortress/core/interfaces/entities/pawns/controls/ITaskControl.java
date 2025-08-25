@@ -29,4 +29,6 @@ public interface ITaskControl {
     void tick();
 
     boolean taskIsOfType(Class<? extends IBaseTask> taskClass);
+
+    void resetAll();
 }
