@@ -46,7 +46,7 @@ public class TaskQueueControl implements ITaskQueueControl {
 
     @Override
     public boolean hasTasks() {
-        return currentTask != null && !tasks.isEmpty() && isDoingEverydayTasks();
+        return currentTask != null || !tasks.isEmpty() || isDoingEverydayTasks();
     }
 
     @Override
