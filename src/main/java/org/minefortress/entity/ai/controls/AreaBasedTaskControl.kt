@@ -16,7 +16,7 @@ class AreaBasedTaskControl(private val pawn: Colonist) : IAreaBasedTaskControl {
         this.task = task
     }
 
-    override fun hasTask() = task != null && task?.notCancelled() ?: false
+    override fun hasTask() = task != null && task?.notCancelled() ?: false && (task?.hasMoreBlocks() ?: false || currentBlock != null)
     override fun hasMoreBlocks() = task
         ?.let { it.notCancelled() && it.hasMoreBlocks() }
         ?: false
