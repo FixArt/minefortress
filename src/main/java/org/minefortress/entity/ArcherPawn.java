@@ -62,10 +62,19 @@ public class ArcherPawn extends TargetedPawn implements IWarrior, RangedAttackMo
     public void shootAt(LivingEntity target, float pullProgress) {
         final var itemStack = new ItemStack(Items.ARROW);
         final var persistentProjectileEntity = ProjectileUtil.createArrowProjectile(this, itemStack, pullProgress);
-        double d = target.getX() - this.getX();
-        double e = target.getBodyY(0.3333333333333333) - persistentProjectileEntity.getY();
-        double f = target.getZ() - this.getZ();
+        double d = target.getX() - this.getX(); // Difference by X
+        double e = target.getBodyY(1.0 / 3.0) - persistentProjectileEntity.getY();
+        double f = target.getZ() - this.getZ(); // Difference by Z
         double g = Math.sqrt(d * d + f * f);
+
+        // Estimate time it will take for arrow to get to target.
+        double estimatedDistance = Math.sqrt(persistentProjectileEntity.getPos().squaredDistanceTo(target.getPos()));
+        double estimatedTime = estimatedDistance / 1.6f; // In ticks.
+
+        // Adjust vector for predicted position.
+        d += target.getVelocity().x * estimatedTime;
+        f += target.getVelocity().z * estimatedTime;
+
         persistentProjectileEntity.setVelocity(d, e + g * 0.20000000298023224, f, 1.6F, (float)(14 - this.getWorld().getDifficulty().getId() * 4));
         this.playSound(SoundEvents.ENTITY_SKELETON_SHOOT, 1.0F, 2F);
         this.getWorld().spawnEntity(persistentProjectileEntity);
