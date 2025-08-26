@@ -11,7 +11,8 @@ public class CommandsManager {
             new DebugItemsCommand(),
             new DebugPawnsCommand(),
             new SpawnPawnsCommand(),
-            new WarriorsCommand()
+            new WarriorsCommand(),
+            new ArchersCommand()
     );
 
     private CommandsManager(){}

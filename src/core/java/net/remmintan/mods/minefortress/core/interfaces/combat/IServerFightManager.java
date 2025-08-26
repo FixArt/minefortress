@@ -10,6 +10,7 @@ import net.remmintan.mods.minefortress.core.interfaces.server.IWritableManager;
 
 public interface IServerFightManager extends IServerManager, ISyncableServerManager, IWritableManager, ITickableManager {
     void spawnDebugWarriors(int num, ServerPlayerEntity player);
+    void spawnDebugArchers(int num, ServerPlayerEntity player);
     void setCurrentTarget(BlockPos pos, ServerWorld world);
     void attractWarriorsToCampfire();
 

@@ -37,6 +37,11 @@ public class ServerFightManager implements IServerFightManager {
     }
 
     @Override
+    public void spawnDebugArchers(int num, ServerPlayerEntity player) {
+        serverFortressManager.spawnDebugEntitiesAroundCampfire(FortressEntities.ARCHER_PAWN_ENTITY_TYPE, num, player);
+    }
+
+    @Override
     public void setCurrentTarget(BlockPos pos, ServerWorld world) {
         keepTrackOfOldTarget(world);
         oldTarget = FortressEntities.NAVIGATION_TARGET_ENTITY_TYPE.spawn(world, pos.up(), SpawnReason.EVENT);
