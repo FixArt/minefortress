@@ -1,13 +1,22 @@
 package org.minefortress.registries.events
 
+import com.chocohead.mm.api.ClassTinkerers
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents
 import net.fabricmc.fabric.api.event.player.AttackEntityCallback
+import net.fabricmc.fabric.api.event.player.UseBlockCallback
 import net.fabricmc.fabric.api.event.player.UseEntityCallback
 import net.fabricmc.loader.api.FabricLoader
 import net.minecraft.client.MinecraftClient
+import net.minecraft.entity.player.PlayerEntity
 import net.minecraft.item.ItemGroups
+import net.minecraft.server.network.ServerPlayerEntity
 import net.minecraft.util.ActionResult
+import net.minecraft.util.Hand
+import net.minecraft.util.hit.BlockHitResult
+import net.minecraft.util.hit.HitResult
+import net.minecraft.world.GameMode
+import net.minecraft.world.World
 import net.remmintan.mods.minefortress.core.FortressState
 import net.remmintan.mods.minefortress.core.interfaces.entities.pawns.IFortressAwareEntity
 import net.remmintan.mods.minefortress.core.interfaces.selections.ClickType
@@ -32,7 +41,22 @@ object FortressClientEvents {
     fun registerEvents() {
         ToastEvents().register()
         InputTracker.initialize()
+        UseBlockCallback.EVENT.register { player: PlayerEntity, world: World, hand: Hand?, hitResult: BlockHitResult ->
+            // Only process server-side
+            if (world.isClient()) return@register ActionResult.PASS
 
+            // Check if player is targeting a block
+            if (hitResult.type != HitResult.Type.BLOCK) return@register ActionResult.PASS
+
+            val FORTRESS: GameMode = ClassTinkerers.getEnum(GameMode::class.java, "FORTRESS")
+            if(player is ServerPlayerEntity) {
+                if (player.interactionManager.gameMode == FORTRESS) {
+                    return@register ActionResult.FAIL
+                }
+            }
+
+            ActionResult.PASS // Allow non-block interactions
+        }
         ClientPlayConnectionEvents.DISCONNECT.register { _, _ -> ClientModUtils.getFortressManager().reset() }
         ClientTickEvents.START_CLIENT_TICK.register { startClientTick(it) }
         ClientTickEvents.END_CLIENT_TICK.register { endClientTick(it) }
