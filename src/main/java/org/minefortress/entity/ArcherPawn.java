@@ -76,7 +76,7 @@ public class ArcherPawn extends TargetedPawn implements IWarrior, RangedAttackMo
         f += target.getVelocity().z * estimatedTime;
 
         persistentProjectileEntity.setVelocity(d, e + g * 0.20000000298023224, f, 1.6F, (float)(14 - this.getWorld().getDifficulty().getId() * 4));
-        this.playSound(SoundEvents.ENTITY_SKELETON_SHOOT, 1.0F, 2F);
+        this.playSound(SoundEvents.ENTITY_ARROW_SHOOT, 1.0F, 2F);
         this.getWorld().spawnEntity(persistentProjectileEntity);
     }
 
