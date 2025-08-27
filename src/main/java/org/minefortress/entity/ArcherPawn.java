@@ -24,7 +24,7 @@ import org.minefortress.entity.ai.goal.warrior.RangedAttackGoal;
 public class ArcherPawn extends TargetedPawn implements IWarrior, RangedAttackMob, IProfessional {
 
     public ArcherPawn(EntityType<? extends BasePawnEntity> entityType, World world) {
-        super(entityType, world, false);
+        super(entityType, world, true);
     }
 
     @Override
