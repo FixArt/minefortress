@@ -9,10 +9,7 @@ import org.minefortress.entity.BasePawnEntity;
 
 public class RangedAttackGoal extends AttackGoal {
 
-    private static final int INTERVAL = 20;
-
     private int targetSeeingTicker = 0;
-    private int cooldown = 0;
     private int longShootingCooldown;
     private int shortShootingCooldown;
 
@@ -64,12 +61,11 @@ public class RangedAttackGoal extends AttackGoal {
                         if(i >= 22)
                             progress = 1.1F;
                         ((RangedAttackMob)pawn).shootAt(target, progress);
-                        this.cooldown = INTERVAL;
                         longShootingCooldown = pawn.getRandom().nextBetween(20, 35);
                         shortShootingCooldown = pawn.getRandom().nextBetween(10, 15);
                     }
                 }
-            } else if (--this.cooldown <= 0 && this.targetSeeingTicker >= -60) {
+            } else if (this.targetSeeingTicker >= -60) {
                 pawn.setCurrentHand(ProjectileUtil.getHandPossiblyHolding(pawn, Items.BOW));
             }
         });
@@ -79,7 +75,6 @@ public class RangedAttackGoal extends AttackGoal {
     public void stop() {
         super.stop();
         this.targetSeeingTicker = 0;
-        this.cooldown = 0;
         if(pawn.isItemInHand(Items.BOW)) {
             pawn.clearActiveItem();
         }
