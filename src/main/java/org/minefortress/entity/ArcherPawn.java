@@ -15,6 +15,7 @@ import net.minecraft.sound.SoundEvents;
 import net.minecraft.world.World;
 import net.remmintan.mods.minefortress.core.interfaces.entities.pawns.IProfessional;
 import net.remmintan.mods.minefortress.core.interfaces.entities.pawns.IWarrior;
+import org.minefortress.entity.ai.goal.EatGoal;
 import org.minefortress.entity.ai.goal.SelectTargetToAttackGoal;
 import org.minefortress.entity.ai.goal.warrior.FollowLivingEntityGoal;
 import org.minefortress.entity.ai.goal.warrior.MoveToBlockGoal;
@@ -32,6 +33,7 @@ public class ArcherPawn extends TargetedPawn implements IWarrior, RangedAttackMo
         this.goalSelector.add(1, new RangedAttackGoal(this));
         this.goalSelector.add(2, new MoveToBlockGoal(this));
         this.goalSelector.add(2, new FollowLivingEntityGoal(this));
+        this.goalSelector.add(3, new EatGoal(this));
         this.goalSelector.add(9, new LookAtEntityGoal(this, LivingEntity.class, 4f));
         this.goalSelector.add(10, new LookAroundGoal(this));
 
