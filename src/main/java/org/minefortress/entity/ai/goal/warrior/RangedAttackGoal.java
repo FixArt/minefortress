@@ -5,10 +5,11 @@ import net.minecraft.entity.projectile.ProjectileUtil;
 import net.minecraft.item.BowItem;
 import net.minecraft.item.Items;
 import net.minecraft.item.ShieldItem;
+import net.minecraft.util.math.Vec3d;
 import org.minefortress.entity.BasePawnEntity;
 
 public class RangedAttackGoal extends AttackGoal {
-
+    private final static double BACKING_AWAY_SPEED = 0.065F; // See https://minecraft.wiki/w/Sneaking#Effects
     private int targetSeeingTicker = 0;
     private int longShootingCooldown;
     private int shortShootingCooldown;
@@ -42,6 +43,8 @@ public class RangedAttackGoal extends AttackGoal {
                 --this.targetSeeingTicker;
             }
 
+            double distance = pawn.getPos().squaredDistanceTo(target.getPos());
+
             if (pawn.isUsingItem()) {
                 if (!visible && this.targetSeeingTicker < -60) {
                     pawn.clearActiveItem();
@@ -50,7 +53,6 @@ public class RangedAttackGoal extends AttackGoal {
 
                     boolean heDroppedHisShield = target.getOffHandStack().getItem() instanceof ShieldItem && !target.isBlocking();
 
-                    double distance = pawn.getPos().squaredDistanceTo(target.getPos());
                     boolean shortAttack = (distance < 5.0 * 5.0 || heDroppedHisShield) && i >= shortShootingCooldown;
                     boolean longAttack = i >= longShootingCooldown;
                     if (shortAttack || longAttack) {
@@ -67,6 +69,14 @@ public class RangedAttackGoal extends AttackGoal {
                 }
             } else if (this.targetSeeingTicker >= -60) {
                 pawn.setCurrentHand(ProjectileUtil.getHandPossiblyHolding(pawn, Items.BOW));
+            }
+
+            if (distance < 5.0 * 5.0) {
+                var away = pawn.getPos().subtract(target.getPos());
+                // What do you mean archers shouldn't escape from targets into the sky?
+                away = new Vec3d(away.x, 0.0, away.z);
+                away = away.normalize().multiply(BACKING_AWAY_SPEED);
+                pawn.setVelocity(away);
             }
         });
     }
