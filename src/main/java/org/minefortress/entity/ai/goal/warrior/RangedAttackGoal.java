@@ -12,6 +12,7 @@ public class RangedAttackGoal extends AttackGoal {
 
     private int targetSeeingTicker = 0;
     private int cooldown = 0;
+    private int plannedTimeToShoot;
 
     public RangedAttackGoal(BasePawnEntity pawn) {
         super(pawn);
@@ -21,6 +22,7 @@ public class RangedAttackGoal extends AttackGoal {
     public void start() {
         super.start();
         pawn.putItemInHand(Items.BOW);
+        plannedTimeToShoot = pawn.getRandom().nextBetween(20, 35);
     }
 
     @Override
@@ -45,10 +47,16 @@ public class RangedAttackGoal extends AttackGoal {
                     pawn.clearActiveItem();
                 } else if (visible) {
                     int i = pawn.getItemUseTime();
-                    if (i >= 20) {
+                    if (i >= plannedTimeToShoot) {
                         pawn.clearActiveItem();
-                        ((RangedAttackMob)pawn).shootAt(target, BowItem.getPullProgress(i));
+                        float progress = BowItem.getPullProgress(i);
+                        // Use special value for critical hits.
+                        // Sadly, this seems like an abuse of `RangedAttackMob` interface.
+                        if(i >= 22)
+                            progress = 1.1F;
+                        ((RangedAttackMob)pawn).shootAt(target, progress);
                         this.cooldown = INTERVAL;
+                        plannedTimeToShoot = pawn.getRandom().nextBetween(20, 35);
                     }
                 }
             } else if (--this.cooldown <= 0 && this.targetSeeingTicker >= -60) {
