@@ -4,6 +4,7 @@ import net.minecraft.entity.ai.RangedAttackMob;
 import net.minecraft.entity.projectile.ProjectileUtil;
 import net.minecraft.item.BowItem;
 import net.minecraft.item.Items;
+import net.minecraft.item.ShieldItem;
 import org.minefortress.entity.BasePawnEntity;
 
 public class RangedAttackGoal extends AttackGoal {
@@ -12,7 +13,8 @@ public class RangedAttackGoal extends AttackGoal {
 
     private int targetSeeingTicker = 0;
     private int cooldown = 0;
-    private int plannedTimeToShoot;
+    private int longShootingCooldown;
+    private int shortShootingCooldown;
 
     public RangedAttackGoal(BasePawnEntity pawn) {
         super(pawn);
@@ -22,7 +24,8 @@ public class RangedAttackGoal extends AttackGoal {
     public void start() {
         super.start();
         pawn.putItemInHand(Items.BOW);
-        plannedTimeToShoot = pawn.getRandom().nextBetween(20, 35);
+        longShootingCooldown = pawn.getRandom().nextBetween(20, 35);
+        shortShootingCooldown = pawn.getRandom().nextBetween(10, 15);
     }
 
     @Override
@@ -47,7 +50,13 @@ public class RangedAttackGoal extends AttackGoal {
                     pawn.clearActiveItem();
                 } else if (visible) {
                     int i = pawn.getItemUseTime();
-                    if (i >= plannedTimeToShoot) {
+
+                    boolean heDroppedHisShield = target.getOffHandStack().getItem() instanceof ShieldItem && !target.isBlocking();
+
+                    double distance = pawn.getPos().squaredDistanceTo(target.getPos());
+                    boolean shortAttack = (distance < 5.0 * 5.0 || heDroppedHisShield) && i >= shortShootingCooldown;
+                    boolean longAttack = i >= longShootingCooldown;
+                    if (shortAttack || longAttack) {
                         pawn.clearActiveItem();
                         float progress = BowItem.getPullProgress(i);
                         // Use special value for critical hits.
@@ -56,7 +65,8 @@ public class RangedAttackGoal extends AttackGoal {
                             progress = 1.1F;
                         ((RangedAttackMob)pawn).shootAt(target, progress);
                         this.cooldown = INTERVAL;
-                        plannedTimeToShoot = pawn.getRandom().nextBetween(20, 35);
+                        longShootingCooldown = pawn.getRandom().nextBetween(20, 35);
+                        shortShootingCooldown = pawn.getRandom().nextBetween(10, 15);
                     }
                 }
             } else if (--this.cooldown <= 0 && this.targetSeeingTicker >= -60) {
