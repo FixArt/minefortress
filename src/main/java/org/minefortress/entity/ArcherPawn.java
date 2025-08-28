@@ -41,7 +41,7 @@ public class ArcherPawn extends TargetedPawn implements IWarrior, RangedAttackMo
     }
 
     private boolean canAttack(LivingEntity it) {
-        return it.isAlive() && (it instanceof HostileEntity || it.equals(getAttackTarget()));
+        return it.isAlive() && (it instanceof HostileEntity || it.equals(getAttackTarget())) && getVisibilityCache().canSee(it);
     }
 
     public static DefaultAttributeContainer.Builder createAttributes() {
