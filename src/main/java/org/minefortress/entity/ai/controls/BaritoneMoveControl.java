@@ -45,7 +45,6 @@ public class BaritoneMoveControl implements IBaritoneMoveControl {
     public void moveTo(@NotNull BlockPos pos) {
         this.reset(true);
         this.updateReachRange(false);
-        this.entity.setMovementSpeed((float)this.entity.getAttributeValue(EntityAttributes.GENERIC_MOVEMENT_SPEED));
         this.moveTarget = pos;
         final var goal = new GoalNear(pos, (int) Math.floor(currentReachRange));
         baritone.getCustomGoalProcess().setGoalAndPath(goal);
@@ -57,7 +56,6 @@ public class BaritoneMoveControl implements IBaritoneMoveControl {
         this.updateReachRange(true);
         this.baritone.settings().followRadius.set((int)Math.floor(currentReachRange));
         this.followTarget = entity;
-        this.entity.setMovementSpeed((float)this.entity.getAttributeValue(EntityAttributes.GENERIC_MOVEMENT_SPEED));
         baritone.getFollowProcess().follow(it -> it.equals(entity));
     }
 
