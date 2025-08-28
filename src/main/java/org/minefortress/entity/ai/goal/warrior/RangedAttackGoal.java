@@ -13,18 +13,25 @@ public class RangedAttackGoal extends AttackGoal {
     private int relaxCooldown;
     private int longShootingCooldown;
     private int shortShootingCooldown;
+    private boolean isCurrentShotCritical;
 
     public RangedAttackGoal(BasePawnEntity pawn) {
         super(pawn);
+    }
+
+    private void updateCooldowns() {
+        var random = pawn.getRandom();
+        relaxCooldown = random.nextBetween(5, 11);
+        longShootingCooldown = random.nextBetween(22, 35);
+        shortShootingCooldown = random.nextBetween(10, 15);
+        isCurrentShotCritical = random.nextFloat() > 0.6F;
     }
 
     @Override
     public void start() {
         super.start();
         pawn.putItemInHand(Items.BOW);
-        relaxCooldown = pawn.getRandom().nextBetween(5, 11);
-        longShootingCooldown = pawn.getRandom().nextBetween(20, 35);
-        shortShootingCooldown = pawn.getRandom().nextBetween(10, 15);
+        updateCooldowns();
     }
 
     @Override
@@ -64,7 +71,9 @@ public class RangedAttackGoal extends AttackGoal {
                     boolean heDroppedHisShield = target.getOffHandStack().getItem() instanceof ShieldItem && !target.isBlocking();
 
                     boolean shortAttack = (distance < 5.0 * 5.0 || heDroppedHisShield) && i >= shortShootingCooldown;
-                    boolean longAttack = i >= longShootingCooldown && relaxCooldown < 1;
+                    boolean nonCriticalAttack = (!isCurrentShotCritical && i >= 20);
+                    boolean criticalAttack = i >= longShootingCooldown;
+                    boolean longAttack = (nonCriticalAttack || criticalAttack) && relaxCooldown < 1;
                     if (shortAttack || longAttack) {
                         pawn.clearActiveItem();
                         float progress = BowItem.getPullProgress(i);
@@ -73,9 +82,7 @@ public class RangedAttackGoal extends AttackGoal {
                         if(i >= 22)
                             progress = 1.1F;
                         ((RangedAttackMob)pawn).shootAt(target, progress);
-                        relaxCooldown = pawn.getRandom().nextBetween(5, 11);
-                        longShootingCooldown = pawn.getRandom().nextBetween(20, 35);
-                        shortShootingCooldown = pawn.getRandom().nextBetween(10, 15);
+                        updateCooldowns();
                     }
                 }
             } else if (--this.relaxCooldown <= 0 && this.targetSeeingTicker >= -60) {
@@ -95,6 +102,7 @@ public class RangedAttackGoal extends AttackGoal {
     @Override
     public void stop() {
         super.stop();
+        this.relaxCooldown = 0;
         this.targetSeeingTicker = 0;
         if(pawn.isItemInHand(Items.BOW)) {
             pawn.clearActiveItem();
