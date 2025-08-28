@@ -9,7 +9,6 @@ import net.minecraft.util.math.Vec3d;
 import org.minefortress.entity.BasePawnEntity;
 
 public class RangedAttackGoal extends AttackGoal {
-    private final static double BACKING_AWAY_SPEED = 0.065F; // See https://minecraft.wiki/w/Sneaking#Effects
     private int targetSeeingTicker = 0;
     private int longShootingCooldown;
     private int shortShootingCooldown;
@@ -75,7 +74,7 @@ public class RangedAttackGoal extends AttackGoal {
                 var away = pawn.getPos().subtract(target.getPos());
                 // What do you mean archers shouldn't escape from targets into the sky?
                 away = new Vec3d(away.x, 0.0, away.z);
-                away = away.normalize().multiply(BACKING_AWAY_SPEED);
+                away = away.normalize().multiply(pawn.getMovementSpeed());
                 pawn.setVelocity(away);
             }
         });
