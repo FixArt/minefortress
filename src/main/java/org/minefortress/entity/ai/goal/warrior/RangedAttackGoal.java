@@ -73,7 +73,7 @@ public class RangedAttackGoal extends AttackGoal {
                 pawn.setCurrentHand(ProjectileUtil.getHandPossiblyHolding(pawn, Items.BOW));
             }
 
-            if (distance < 5.0 * 5.0) {
+            if (distance < 8.0 * 8.0) {
                 var away = pawn.getPos().subtract(target.getPos());
                 // What do you mean archers shouldn't escape from targets into the sky?
                 away = new Vec3d(away.x, 0.0, away.z);
