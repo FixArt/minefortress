@@ -44,7 +44,16 @@ public class RangedAttackGoal extends AttackGoal {
                 --this.targetSeeingTicker;
             }
 
-            double distance = pawn.getPos().squaredDistanceTo(target.getPos());
+            Vec3d targetPosition = target.getPos();
+            // If you have the high ground...
+            if(pawn.getPos().y > targetPosition.y)
+                // ...you better not to lose it.
+                // This will make archers be less inclined to back away,
+                // if the mob comes from downward direction.
+                // So archers will not jump off from towers and walls.
+                targetPosition = new Vec3d(targetPosition.x, targetPosition.y * 4, targetPosition.z);
+
+            double distance = pawn.getPos().squaredDistanceTo(targetPosition);
 
             if (pawn.isUsingItem()) {
                 if (!visible && this.targetSeeingTicker < -60) {
