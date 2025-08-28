@@ -10,6 +10,7 @@ import org.minefortress.entity.BasePawnEntity;
 
 public class RangedAttackGoal extends AttackGoal {
     private int targetSeeingTicker = 0;
+    private int relaxCooldown;
     private int longShootingCooldown;
     private int shortShootingCooldown;
 
@@ -21,6 +22,7 @@ public class RangedAttackGoal extends AttackGoal {
     public void start() {
         super.start();
         pawn.putItemInHand(Items.BOW);
+        relaxCooldown = pawn.getRandom().nextBetween(5, 11);
         longShootingCooldown = pawn.getRandom().nextBetween(20, 35);
         shortShootingCooldown = pawn.getRandom().nextBetween(10, 15);
     }
@@ -53,7 +55,7 @@ public class RangedAttackGoal extends AttackGoal {
                     boolean heDroppedHisShield = target.getOffHandStack().getItem() instanceof ShieldItem && !target.isBlocking();
 
                     boolean shortAttack = (distance < 5.0 * 5.0 || heDroppedHisShield) && i >= shortShootingCooldown;
-                    boolean longAttack = i >= longShootingCooldown;
+                    boolean longAttack = i >= longShootingCooldown && relaxCooldown < 1;
                     if (shortAttack || longAttack) {
                         pawn.clearActiveItem();
                         float progress = BowItem.getPullProgress(i);
@@ -62,11 +64,12 @@ public class RangedAttackGoal extends AttackGoal {
                         if(i >= 22)
                             progress = 1.1F;
                         ((RangedAttackMob)pawn).shootAt(target, progress);
+                        relaxCooldown = pawn.getRandom().nextBetween(5, 11);
                         longShootingCooldown = pawn.getRandom().nextBetween(20, 35);
                         shortShootingCooldown = pawn.getRandom().nextBetween(10, 15);
                     }
                 }
-            } else if (this.targetSeeingTicker >= -60) {
+            } else if (--this.relaxCooldown <= 0 && this.targetSeeingTicker >= -60) {
                 pawn.setCurrentHand(ProjectileUtil.getHandPossiblyHolding(pawn, Items.BOW));
             }
 
