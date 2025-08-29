@@ -5,8 +5,9 @@ import net.minecraft.entity.projectile.ProjectileUtil;
 import net.minecraft.item.BowItem;
 import net.minecraft.item.Items;
 import net.minecraft.item.ShieldItem;
-import net.minecraft.util.math.Vec3d;
 import org.minefortress.entity.BasePawnEntity;
+
+import java.util.EnumSet;
 
 public class RangedAttackGoal extends AttackGoal {
     private int targetSeeingTicker = 0;
@@ -17,6 +18,7 @@ public class RangedAttackGoal extends AttackGoal {
 
     public RangedAttackGoal(BasePawnEntity pawn) {
         super(pawn);
+        this.setControls(EnumSet.of(Control.LOOK));
     }
 
     private void updateCooldowns() {
@@ -51,16 +53,7 @@ public class RangedAttackGoal extends AttackGoal {
                 --this.targetSeeingTicker;
             }
 
-            Vec3d targetPosition = target.getPos();
-            // If you have the high ground...
-            if(pawn.getPos().y > targetPosition.y)
-                // ...you better not to lose it.
-                // This will make archers be less inclined to back away,
-                // if the mob comes from downward direction.
-                // So archers will not jump off from towers and walls.
-                targetPosition = new Vec3d(targetPosition.x, targetPosition.y * 4, targetPosition.z);
-
-            double distance = pawn.getPos().squaredDistanceTo(targetPosition);
+            double distance = pawn.getPos().squaredDistanceTo(target.getPos());
 
             if (pawn.isUsingItem()) {
                 if (!visible && this.targetSeeingTicker < -60) {
@@ -87,14 +80,6 @@ public class RangedAttackGoal extends AttackGoal {
                 }
             } else if (--this.relaxCooldown <= 0 && this.targetSeeingTicker >= -60) {
                 pawn.setCurrentHand(ProjectileUtil.getHandPossiblyHolding(pawn, Items.BOW));
-            }
-
-            if (distance < 8.0 * 8.0) {
-                var away = pawn.getPos().subtract(target.getPos());
-                // What do you mean archers shouldn't escape from targets into the sky?
-                away = new Vec3d(away.x, 0.0, away.z);
-                away = away.normalize().multiply(pawn.getMovementSpeed());
-                pawn.addVelocity(away);
             }
         });
     }
