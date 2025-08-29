@@ -38,7 +38,10 @@ public class BackAwayGoal extends AttackGoal {
     // Check if the pawn would fall off at the given position
     private boolean isLocationFallSafe(Vec3d position) {
         World world = pawn.getWorld();
-        BlockPos blockPos = new BlockPos((int)position.x, (int)position.y, (int)position.z);
+        int x = (int) Math.floor(position.x);
+        int y = (int) Math.floor(position.y);
+        int z = (int) Math.floor(position.z);
+        BlockPos blockPos = new BlockPos(x, y, z);
 
         // Check if there's a solid block beneath the pawn
         BlockPos beneathPos = blockPos.down();
