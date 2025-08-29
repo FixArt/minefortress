@@ -94,7 +94,7 @@ public class RangedAttackGoal extends AttackGoal {
                 // What do you mean archers shouldn't escape from targets into the sky?
                 away = new Vec3d(away.x, 0.0, away.z);
                 away = away.normalize().multiply(pawn.getMovementSpeed());
-                pawn.setVelocity(away);
+                pawn.addVelocity(away);
             }
         });
     }
