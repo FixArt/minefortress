@@ -29,7 +29,7 @@ public class ArcherPawn extends TargetedPawn implements IWarrior, RangedAttackMo
     protected void initGoals() {
         super.initGoals();
         this.goalSelector.add(1, new RangedAttackGoal(this));
-        this.goalSelector.add(1, new BackAwayGoal(this, 8.0));
+        this.goalSelector.add(1, new BackAwayGoal(this, 5.0));
         this.goalSelector.add(2, new MoveToBlockGoal(this));
         this.goalSelector.add(2, new FollowLivingEntityGoal(this));
         this.goalSelector.add(3, new EatGoal(this));
