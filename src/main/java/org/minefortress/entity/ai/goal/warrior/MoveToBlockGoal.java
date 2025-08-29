@@ -40,6 +40,8 @@ public class MoveToBlockGoal extends Goal {
     @Override
     public void stop() {
         pawn.getFortressMoveControl().reset();
+        if(stillOnTheSameTarget())
+            pawn.resetTargets();
         target = null;
     }
 
