@@ -7,6 +7,7 @@ import net.minecraft.entity.ai.goal.LookAroundGoal;
 import net.minecraft.entity.ai.goal.LookAtEntityGoal;
 import net.minecraft.entity.attribute.DefaultAttributeContainer;
 import net.minecraft.entity.attribute.EntityAttributes;
+import net.minecraft.entity.mob.EndermanEntity;
 import net.minecraft.entity.mob.HostileEntity;
 import net.minecraft.entity.projectile.ProjectileUtil;
 import net.minecraft.item.ItemStack;
@@ -39,7 +40,7 @@ public class ArcherPawn extends TargetedPawn implements IWarrior, RangedAttackMo
     }
 
     private boolean canAttack(LivingEntity it) {
-        return it.isAlive() && (it instanceof HostileEntity || it.equals(getAttackTarget()));
+        return it.isAlive() && ((it instanceof HostileEntity && !(it instanceof EndermanEntity)) || it.equals(getAttackTarget()));
     }
 
     public static DefaultAttributeContainer.Builder createAttributes() {
