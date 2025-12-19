@@ -9,7 +9,7 @@ import org.minefortress.entity.HungryEntity
 
 class EatGoal(private val entity: HungryEntity) : Goal() {
     override fun canStart(): Boolean {
-        return eatControl.isHungry && foodManager.hasFood()
+        return eatControl.isHungry && foodManager.hasFood() && entity.target == null
     }
 
     override fun start() {

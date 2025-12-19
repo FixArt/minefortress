@@ -2,6 +2,7 @@ package org.minefortress.entity;
 
 import baritone.api.minefortress.IMinefortressEntity;
 import net.minecraft.entity.EntityType;
+import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
@@ -59,5 +60,13 @@ public abstract class BaritonableEntity extends PathAwareEntity implements IMine
         }
 
         super.onTrackedDataSet(data);
+    }
+
+    @Override
+    public void tickMovement() {
+        super.tickMovement();
+        setMovementSpeed((float)this.getAttributeValue(EntityAttributes.GENERIC_MOVEMENT_SPEED));
+        if (isUsingItem() && !hasVehicle())
+            setMovementSpeed(getMovementSpeed() / 5.0F);
     }
 }

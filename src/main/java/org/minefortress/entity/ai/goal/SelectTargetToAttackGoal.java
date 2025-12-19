@@ -25,6 +25,7 @@ public final class SelectTargetToAttackGoal extends TrackTargetGoal {
     @Nullable
     private LivingEntity targetEntity;
     private final TargetPredicate targetPredicate;
+    private int cooldown;
 
     public SelectTargetToAttackGoal(MobEntity mob, @NotNull Predicate<LivingEntity> targetPredicate) {
         super(mob, false, true);
@@ -45,7 +46,18 @@ public final class SelectTargetToAttackGoal extends TrackTargetGoal {
     @Override
     public void start() {
         this.mob.setTarget(this.targetEntity);
+        cooldown = mob.getRandom().nextBetween(15, 26);
         super.start();
+    }
+
+    @Override
+    public void tick() {
+        if(cooldown == 0) {
+            this.findClosestTarget();
+            this.mob.setTarget(this.targetEntity);
+            cooldown = mob.getRandom().nextBetween(15, 26);
+        }
+        --cooldown;
     }
 
     private Box getSearchBox(double distance) {

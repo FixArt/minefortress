@@ -16,23 +16,24 @@ import net.minecraft.sound.SoundEvents;
 import net.minecraft.world.World;
 import net.remmintan.mods.minefortress.core.interfaces.entities.pawns.IProfessional;
 import net.remmintan.mods.minefortress.core.interfaces.entities.pawns.IWarrior;
+import org.minefortress.entity.ai.goal.EatGoal;
 import org.minefortress.entity.ai.goal.SelectTargetToAttackGoal;
-import org.minefortress.entity.ai.goal.warrior.FollowLivingEntityGoal;
-import org.minefortress.entity.ai.goal.warrior.MoveToBlockGoal;
-import org.minefortress.entity.ai.goal.warrior.RangedAttackGoal;
+import org.minefortress.entity.ai.goal.warrior.*;
 
 public class ArcherPawn extends TargetedPawn implements IWarrior, RangedAttackMob, IProfessional {
 
     public ArcherPawn(EntityType<? extends BasePawnEntity> entityType, World world) {
-        super(entityType, world, false);
+        super(entityType, world, true);
     }
 
     @Override
     protected void initGoals() {
         super.initGoals();
         this.goalSelector.add(1, new RangedAttackGoal(this));
+        this.goalSelector.add(1, new BackAwayGoal(this, 5.0));
         this.goalSelector.add(2, new MoveToBlockGoal(this));
         this.goalSelector.add(2, new FollowLivingEntityGoal(this));
+        this.goalSelector.add(3, new EatGoal(this));
         this.goalSelector.add(9, new LookAtEntityGoal(this, LivingEntity.class, 4f));
         this.goalSelector.add(10, new LookAroundGoal(this));
 
@@ -40,7 +41,7 @@ public class ArcherPawn extends TargetedPawn implements IWarrior, RangedAttackMo
     }
 
     private boolean canAttack(LivingEntity it) {
-        return it.isAlive() && ((it instanceof HostileEntity && !(it instanceof EndermanEntity)) || it.equals(getAttackTarget()));
+        return  it.isAlive() && ((it instanceof HostileEntity && !(it instanceof EndermanEntity)) || it.equals(getAttackTarget())) && getVisibilityCache().canSee(it);
     }
 
     public static DefaultAttributeContainer.Builder createAttributes() {
@@ -63,12 +64,23 @@ public class ArcherPawn extends TargetedPawn implements IWarrior, RangedAttackMo
     public void shootAt(LivingEntity target, float pullProgress) {
         final var itemStack = new ItemStack(Items.ARROW);
         final var persistentProjectileEntity = ProjectileUtil.createArrowProjectile(this, itemStack, pullProgress);
-        double d = target.getX() - this.getX();
-        double e = target.getBodyY(0.3333333333333333) - persistentProjectileEntity.getY();
-        double f = target.getZ() - this.getZ();
+        if(pullProgress >= 1.1)
+            persistentProjectileEntity.setCritical(true);
+        double d = target.getX() - this.getX(); // Difference by X
+        double e = target.getBodyY(1.0 / 3.0) - persistentProjectileEntity.getY();
+        double f = target.getZ() - this.getZ(); // Difference by Z
         double g = Math.sqrt(d * d + f * f);
-        persistentProjectileEntity.setVelocity(d, e + g * 0.20000000298023224, f, 1.6F, (float)(14 - this.getWorld().getDifficulty().getId() * 4));
-        this.playSound(SoundEvents.ENTITY_SKELETON_SHOOT, 1.0F, 1.0F / (this.getRandom().nextFloat() * 0.4F + 0.8F));
+
+        // Estimate time it will take for arrow to get to target.
+        double estimatedDistance = Math.sqrt(persistentProjectileEntity.getPos().squaredDistanceTo(target.getPos()));
+        double estimatedTime = estimatedDistance / 1.6f; // In ticks.
+
+        // Adjust vector for predicted position.
+        d += target.getVelocity().x * estimatedTime;
+        f += target.getVelocity().z * estimatedTime;
+
+        persistentProjectileEntity.setVelocity(d, e + g * 0.20000000298023224, f, 1.6F, 2F);
+        this.playSound(SoundEvents.ENTITY_ARROW_SHOOT, 1.0F, 1.0F / (this.getRandom().nextFloat() * 0.4F + 0.8F));
         this.getWorld().spawnEntity(persistentProjectileEntity);
     }
 
