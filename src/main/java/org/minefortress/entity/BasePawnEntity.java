@@ -189,6 +189,11 @@ public abstract class BasePawnEntity extends HungryEntity implements IFortressAw
         return 15;
     }
 
+    public void performJump() {
+        if (this.isOnGround() && !this.hasVehicle())
+            this.jump();
+    }
+
     public static DefaultAttributeContainer.Builder createAttributes() {
         return LivingEntity.createLivingAttributes()
                 .add(EntityAttributes.GENERIC_MAX_HEALTH)
